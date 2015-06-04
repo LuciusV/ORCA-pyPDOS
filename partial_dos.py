@@ -18,12 +18,12 @@ import re
 parser = argparse.ArgumentParser(description='Parse ORCA out file and plot partial DOS')
 group = parser.add_mutually_exclusive_group()
 parser.add_argument('filename', type=str, help="path to input file(s)", nargs='+')
-parser.add_argument('-s', '--smear', type=float, default=0.1, help="smearing width in eV")
+parser.add_argument('-s', '--smear', type=float, default=0.1, help="smearing width (in eV)")
 parser.add_argument('-v', '--verbosity', action='count', default=0, help="verbosity level(-v,-vv,-vvv)")
 group.add_argument('-u', '--unique', default=False, action='store_true', help="plot DOS for unique atoms")
-group.add_argument('-a', '--atoms', type=int, help="array of atoms for whihc to plot DOS", nargs='+')
-parser.add_argument('-L', '--lowest', type=float, default=-20.0, help="Lowest energy range for plot")
-parser.add_argument('-H', '--highest', type=float, default=0.0, help="Highest energy range for plot")
+group.add_argument('-a', '--atoms', type=int, help="array of atoms for which to plot DOS", nargs='+')
+parser.add_argument('-L', '--lowest', type=float, default=-20.0, help="Lowest energy range for plot (in eV)")
+parser.add_argument('-H', '--highest', type=float, default=0.0, help="Highest energy range for plot (in eV)")
 args = parser.parse_args()
 
 if args.atoms:
@@ -96,9 +96,9 @@ def main():
                 if not hftyp_found:
                     if "Hartree-Fock type" in line:
                         HFTyp = str(line.split()[-1])
-                        if HFTyp == 'UKS':
+                        if HFTyp == 'UHF':
                             del(data)
-                        if HFTyp == 'RKS':
+                        if HFTyp == 'RHF':
                             del(data_a)
                             del(data_b)
                         hftyp_found = True
