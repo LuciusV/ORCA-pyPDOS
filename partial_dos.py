@@ -2,11 +2,25 @@
 # -*- coding: utf-8 -*-
 
 """
+Partial density-of-states (PDOS) plotter for ORCA (https://orcaforum.cec.mpg.de/) written in python
+AUTHOR: Dr. Evgeny V. Tikhonov, Moscow State University, Physics department, email: e.tikhonov@physics.msu.ru
+"""
+
+"""
 N-th molecular orbital represented as:
 \Psi(N) = \sum_m C_{mn}\phi_m
 where \phi_m is m-th atomic orbital
 It is sliced as Cmn[N,:]
 """
+
+"""
+TODO (in order of importance:
+1. Option of plotting PDOS for given array of atoms.
+2. Interactive and not-interactive modes
+3. Adding __doc__ function, optimizing import from pylab 
+
+"""
+
 
 from pylab import *
 from scipy.stats import norm
