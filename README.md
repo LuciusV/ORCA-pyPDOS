@@ -5,6 +5,7 @@ I. ABOUT
 II. REQUIREMENTS
 III. FEATURES
 IV. FEATURES NOT IMPLEMENTED YET (IN TODO LIST).
+V. KNOWN BUGS
 
 I. ABOUT
 This python script plots partial density-of-states from ORCA log file.
@@ -24,3 +25,10 @@ IV. FEATURES NOT IMPLEMENTED YET (IN TODO LIST).
 1. Plotting PDOS for list of chosen atoms
 2. Interactive and not-interactive mode
 
+V. KNOWN BUGS
+
+(#001) For lines where there is no space between columns, like:
+3H 2s -3.975631 0.012837 -2.950634 -0.009080-16.567733 -6.648447
+parser fails to split line correctly
+WORKAROUND: edit file manually, adding space
+FIX IN PROGRESS: fix with regular expression substitution
