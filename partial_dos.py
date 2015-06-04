@@ -26,6 +26,8 @@ parser.add_argument('-L', '--lowest', type=float, default=-20.0, help="Lowest en
 parser.add_argument('-H', '--highest', type=float, default=0.0, help="Highest energy range for plot (in eV)")
 args = parser.parse_args()
 
+atoms_listed = False
+
 if args.atoms:
     args.atoms = array(args.atoms)
     atoms_listed = True
@@ -123,6 +125,8 @@ def main():
                 if mol_offset_found and HFTyp == 'UHF' and ln >= MOL_OFFSET+2+(DIM+4)*(DIM/6+shift) +1 and ln <= MOL_OFFSET+1+2*(DIM+4)*(DIM/6+shift) +1:
                     data_b.append(line[:-1])
                 ln += 1
+            if not mol_offset_found:
+                sys.exit("Molecular orbitals not found. Please rerun ORCA job with option \"%output print [p_mos] 1 end\".")
             BASISAO = []
             if HFTyp == 'RHF':
                 for line in data[4:4+DIM]:
