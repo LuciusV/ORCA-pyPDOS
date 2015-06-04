@@ -142,11 +142,29 @@ def main():
                         MOL_OFFSET = ln
                         mol_offset_found = True
                 if mol_offset_found and HFTyp == 'RHF' and ln >= MOL_OFFSET+2 and ln <= MOL_OFFSET+1+(DIM+4)*(DIM/6+shift):
-                    data.append(line[:-1])
+                    expr = re.search("[0-9]-[0-9]",line) # to fix bug #001
+                    if expr:
+                        match = expr.group(0)[0]+" -"+expr.group(0)[-1]
+                        newline = re.sub("[0-9]-[0-9]", match, line)
+                        data.append(newline[:-1])
+                    else:
+                        data.append(line[:-1])
                 if mol_offset_found and HFTyp == 'UHF' and ln >= MOL_OFFSET+2 and ln <= MOL_OFFSET+1+(DIM+4)*(DIM/6+shift):
-                    data_a.append(line[:-1])
+                    expr = re.search("[0-9]-[0-9]",line)
+                    if expr:
+                        match = expr.group(0)[0]+" -"+expr.group(0)[-1]
+                        newline = re.sub("[0-9]-[0-9]", match, line)
+                        data_a.append(line[:-1])
+                    else:
+                        data_a.append(newline[:-1])
                 if mol_offset_found and HFTyp == 'UHF' and ln >= MOL_OFFSET+2+(DIM+4)*(DIM/6+shift) +1 and ln <= MOL_OFFSET+1+2*(DIM+4)*(DIM/6+shift) +1:
-                    data_b.append(line[:-1])
+                    expr = re.search("[0-9]-[0-9]",line)
+                    if expr:
+                        match = expr.group(0)[0]+" -"+expr.group(0)[-1]
+                        newline = re.sub("[0-9]-[0-9]", match, line)
+                        data_b.append(newline[:-1])
+                    else:
+                        data_b.append(line[:-1])
                 ln += 1
             if not mol_offset_found:
                 sys.exit("Molecular orbitals not found. Please rerun ORCA job with option \"%output print [p_mos] 1 end\".")
