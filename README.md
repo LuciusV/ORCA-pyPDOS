@@ -1,4 +1,4 @@
-# ORCA-pyPDSO
+# ORCA-pyPDOS
 Partial density-of-states (PDOS) plotter for ORCA (https://orcaforum.cec.mpg.de/) written in python
 
 I. ABOUT
