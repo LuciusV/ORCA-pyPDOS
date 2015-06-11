@@ -15,19 +15,16 @@ It is sliced as Cmn[N,:]
 
 """
 TODO (in order of importance:
-0. Fix bug (#001)
-1. Option of plotting PDOS for given array of atoms.
-2. Interactive and not-interactive modes
-3. Adding __doc__ function, optimizing import from pylab 
+1. Interactive and not-interactive modes
+2. Adding __doc__ function, optimizing import from pylab 
 
 
 KNOWN BUGS
 
 (#001) For lines where there is no space between columns, like:
   3H   2s        -3.975631  0.012837 -2.950634 -0.009080-16.567733 -6.648447
-parser fails to split line correctly
-WORKAROUND: edit file manually, adding space
-FIX IN PROGRESS: fix with regular expression substitution
+parser fails to split line correctly (fixed)
+MAY HAPPEN IF NO - SIGN WOULD BE BETWEEN TWO COLUMNS WITHOUT WHITESPACE
 """
 
 
@@ -52,7 +49,7 @@ args = parser.parse_args()
 atoms_listed = False
 
 if args.atoms:
-    args.atoms = array(args.atoms)
+    args.atoms = unique(array(args.atoms))
     if args.verbosity >= 3: print type(args.atoms), size(args.atoms), args.atoms
     atoms_listed = True
 
