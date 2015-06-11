@@ -53,6 +53,7 @@ atoms_listed = False
 
 if args.atoms:
     args.atoms = array(args.atoms)
+    if args.verbosity >= 3: print type(args.atoms), size(args.atoms), args.atoms
     atoms_listed = True
 
 def gaussian(x, mu, sig):
@@ -169,17 +170,28 @@ def main():
             if not mol_offset_found:
                 sys.exit("Molecular orbitals not found. Please rerun ORCA job with option \"%output print [p_mos] 1 end\".")
             BASISAO = []
+            if atoms_listed:
+                ATOMLIST = []
             if HFTyp == 'RHF':
                 for line in data[4:4+DIM]:
                     if args.unique:
                         BASISAO.append(line.split()[0])
-                        species = set(BASISAO)
-                        species = list(species)
-                        species.sort()
                     elif atoms_listed:
-                        BASISAO.append(re.sub("[0-9]", "", line.split()[0]))
+                        AO = line.split()[0]
+                        BASISAO.append(AO)
+                        anumber = re.sub("[a-zA-Z]","",AO)
+                        if intersect1d(array(anumber), args.atoms).size:
+                            ATOMLIST.append(AO)
                     else:
                         BASISAO.append(re.sub("[0-9]", "", line.split()[0]))
+                if args.unique:
+                    species = set(BASISAO)
+                    species = list(species)
+                    species.sort()
+                if atoms_listed:
+                    species = set(ATOMLIST)
+                    species = list(species)
+                    species.sort()
                 if args.verbosity >= 2: print BASISAO
                 if args.verbosity >= 1: print "Unique species:", species
                 MOS_EIG = list_to_array(data[1::DIM+4])
@@ -205,13 +217,24 @@ def main():
                 plot(domain, Sum,'k',label='total DOS')
             if HFTyp == 'UHF':
                 for line in data_a[4:4+DIM]:
-                    if not args.unique:
-                        BASISAO.append(re.sub("[0-9]", "", line.split()[0]))
-                    else:
+                    if args.unique:
                         BASISAO.append(line.split()[0])
-                        species = set(BASISAO)
-                        species = list(species)
-                        species.sort()
+                    elif atoms_listed:
+                        AO = line.split()[0]
+                        BASISAO.append(AO)
+                        anumber = re.sub("[a-zA-Z]","",AO)
+                        if intersect1d(array(anumber), args.atoms).size:
+                            ATOMLIST.append(AO)
+                    else:
+                        BASISAO.append(re.sub("[0-9]", "", line.split()[0]))
+                if args.unique:
+                    species = set(BASISAO)
+                    species = list(species)
+                    species.sort()
+                if atoms_listed:
+                    species = set(ATOMLIST)
+                    species = list(species)
+                    species.sort()
                 if args.verbosity >= 2: print BASISAO
                 if args.verbosity >= 1: print "Unique species:", species
                 MOS_EIG_A = list_to_array(data_a[1::DIM+4])
@@ -241,16 +264,16 @@ def main():
                     for N,e in zip(arange(DIM),MOS_EIG_B):
                         if args.verbosity >=3 : print e,Cmn_b[N, indices].sum()
                         Sum_b += Cmn_b[N, indices].sum()*gaussian(domain, e, args.smear)
-                    plot(domain, Sum_a, label=atom)
-                    plot(domain, -Sum_b, label=atom)
+                    plot(domain, Sum_a, label=atom+' up')
+                    plot(domain, -Sum_b, label=atom+' down')
                 Sum_a = zeros(domain.shape)
                 Sum_b = zeros(domain.shape)
                 for e in MOS_EIG_A:
                     Sum_a += gaussian(domain, e, args.smear)
                 for e in MOS_EIG_B:
                     Sum_b += gaussian(domain, e, args.smear)
-                plot(domain, Sum_a, 'k', label='total DOS')
-                plot(domain, -Sum_b, 'k', label='total DOS')
+                plot(domain, Sum_a, 'k', label='total up DOS')
+                plot(domain, -Sum_b, 'k', label='total down DOS')
             legend()
             show()
             log.close()
