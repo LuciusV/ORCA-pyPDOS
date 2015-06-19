@@ -19,11 +19,11 @@ II. REQUIREMENTS
 III. FEATURES
 1. Plotting PDOS for each sort of atom
 2. Plotting PDOS for every single atom
-3. Plotting total DOS
+3. Plotting PDOS for list of chosen atoms
+4. Plotting total DOS
 
 IV. FEATURES NOT IMPLEMENTED YET (IN TODO LIST).
-1. Plotting PDOS for list of chosen atoms
-2. Interactive and not-interactive mode
+1. Interactive and not-interactive mode
 
 V. KNOWN BUGS
 
