@@ -202,16 +202,26 @@ def main():
                 Cmn = array(Cmn)
                 BASISAO = array(BASISAO)
                 for atom in species:
-                    Sum = zeros(domain.shape)
+                    Sum_occ = zeros(domain.shape)
+                    Sum_free = zeros(domain.shape)
                     indices = where(BASISAO == atom)
                     for N,e in zip(arange(DIM),MOS_EIG):
                         if args.verbosity >= 3: print e,Cmn[N, indices].sum()
-                        Sum += Cmn[N, indices].sum()*gaussian(domain, e, args.smear)
-                    plot(domain, Sum, label=atom)
-                Sum = zeros(domain.shape)
-                for e in MOS_EIG:
-                    Sum += 2*gaussian(domain, e, args.smear)
-                plot(domain, Sum,'k',label='total DOS')
+                        if MOS_OCC[N] > 0.5:
+                            Sum_occ += Cmn[N, indices].sum()*gaussian(domain, e, args.smear)
+                        else:
+                            Sum_free += Cmn[N, indices].sum()*gaussian(domain, e, args.smear)
+                    plot(domain, Sum_occ, label=atom+' occ.')
+                    plot(domain, Sum_free,'--', label=atom+' free')
+                Sum_occ = zeros(domain.shape)
+                Sum_free = zeros(domain.shape)
+                for e,f in zip(MOS_EIG,MOS_OCC):
+                    if f > 0.5:
+                        Sum_occ += 2*gaussian(domain, e, args.smear)
+                    else:
+                        Sum_free += 2*gaussian(domain, e, args.smear)
+                plot(domain, Sum_occ,'k', label='total occ. DOS')
+                plot(domain, Sum_free,'k--', label='total free DOS')
             if HFTyp == 'UHF':
                 for line in data_a[4:4+DIM]:
                     if args.unique:
@@ -252,26 +262,46 @@ def main():
                 Cmn_b = array(Cmn_b)
                 BASISAO = array(BASISAO)
                 for atom in species:
-                    Sum_a = zeros(domain.shape)
-                    Sum_b = zeros(domain.shape)
+                    Sum_a_occ = zeros(domain.shape)
+                    Sum_a_free = zeros(domain.shape)
+                    Sum_b_occ = zeros(domain.shape)
+                    Sum_b_free = zeros(domain.shape)
                     indices = where(BASISAO == atom)
                     for N,e in zip(arange(DIM),MOS_EIG_A):
                         if args.verbosity >= 3: print e,Cmn_a[N, indices].sum()
-                        Sum_a += Cmn_a[N, indices].sum()*gaussian(domain, e, args.smear)
+                        if MOS_OCC_A[N] > 0.5:
+                            Sum_a_occ += Cmn_a[N, indices].sum()*gaussian(domain, e, args.smear)
+                        else:
+                            Sum_a_free += Cmn_a[N, indices].sum()*gaussian(domain, e, args.smear)
                     for N,e in zip(arange(DIM),MOS_EIG_B):
                         if args.verbosity >=3 : print e,Cmn_b[N, indices].sum()
-                        Sum_b += Cmn_b[N, indices].sum()*gaussian(domain, e, args.smear)
-                    plot(domain, Sum_a, label=atom+' up')
-                    plot(domain, -Sum_b, label=atom+' down')
-                Sum_a = zeros(domain.shape)
-                Sum_b = zeros(domain.shape)
-                for e in MOS_EIG_A:
-                    Sum_a += gaussian(domain, e, args.smear)
-                for e in MOS_EIG_B:
-                    Sum_b += gaussian(domain, e, args.smear)
-                plot(domain, Sum_a, 'k', label='total up DOS')
-                plot(domain, -Sum_b, 'k', label='total down DOS')
-            legend()
+                        if MOS_OCC_B[N] > 0.5:
+                            Sum_b_occ += Cmn_b[N, indices].sum()*gaussian(domain, e, args.smear)
+                        else:
+                            Sum_b_free += Cmn_b[N, indices].sum()*gaussian(domain, e, args.smear)
+                    plot(domain, Sum_a_occ, label=atom+' up occ.')
+                    plot(domain, Sum_a_free,'--', label=atom+' up free')
+                    plot(domain, -Sum_b_occ, label=atom+' down occ.')
+                    plot(domain, -Sum_b_free,'--', label=atom+' down free')
+                Sum_a_occ = zeros(domain.shape)
+                Sum_a_free = zeros(domain.shape)
+                Sum_b_occ = zeros(domain.shape)
+                Sum_b_free = zeros(domain.shape)
+                for e,f in zip(MOS_EIG_A,MOS_OCC_A):
+                    if f > 0.5:
+                        Sum_a_occ += gaussian(domain, e, args.smear)
+                    else:
+                        Sum_a_free += gaussian(domain, e, args.smear)
+                for e,f in zip(MOS_EIG_B,MOS_OCC_B):
+                    if f > 0.5:
+                        Sum_b_occ += gaussian(domain, e, args.smear)
+                    else:
+                        Sum_b_free += gaussian(domain, e, args.smear)
+                plot(domain, Sum_a_occ, 'k', label='total up DOS')
+                plot(domain, Sum_a_free, 'k--', label='total up DOS')
+                plot(domain, -Sum_b_occ, 'k', label='total down DOS')
+                plot(domain, -Sum_b_free, 'k--', label='total down DOS')
+            legend(loc=2)
             show()
             log.close()
 
