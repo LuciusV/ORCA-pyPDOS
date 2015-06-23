@@ -195,6 +195,9 @@ def main():
                 MOS_EIG = MOS_EIG*codata.value('Hartree energy in eV')
                 MOS_OCC = list_to_array(data[2::DIM+4])
                 domain = linspace(args.lowest, args.highest, 10000)
+                if atoms_listed:
+                    full_occ_sum = zeros(domain.shape)
+                    full_free_sum = zeros(domain.shape)
                 Cmn = []
                 for n in arange(DIM):
                     mo = get_mo_decomposition(n, data, True)
@@ -211,6 +214,9 @@ def main():
                             Sum_occ += Cmn[N, indices].sum()*gaussian(domain, e, args.smear)
                         else:
                             Sum_free += Cmn[N, indices].sum()*gaussian(domain, e, args.smear)
+                    if atoms_listed:
+                        full_occ_sum += Sum_occ 
+                        full_free_sum += Sum_free
                     plot(domain, Sum_occ, label=atom+' occ.')
                     plot(domain, Sum_free,'--', label=atom+' free')
                 Sum_occ = zeros(domain.shape)
@@ -220,8 +226,11 @@ def main():
                         Sum_occ += 2*gaussian(domain, e, args.smear)
                     else:
                         Sum_free += 2*gaussian(domain, e, args.smear)
-                plot(domain, Sum_occ,'k', label='total occ. DOS')
-                plot(domain, Sum_free,'k--', label='total free DOS')
+                if atoms_listed:
+                    plot(domain, full_occ_sum, color='#f1595f', lw = 2.0, label='full occ. of sel. atoms')
+                    plot(domain, full_free_sum, '--', color='#f1595f', lw = 2.0, label='full occ. of sel. atoms')
+                plot(domain, Sum_occ,'k', lw = 2.0, label='total occ. DOS')
+                plot(domain, Sum_free,'k--', lw = 2.0, label='total free DOS')
             if HFTyp == 'UHF':
                 for line in data_a[4:4+DIM]:
                     if args.unique:
@@ -251,6 +260,11 @@ def main():
                 MOS_OCC_A = list_to_array(data_a[2::DIM+4])
                 MOS_OCC_B = list_to_array(data_b[2::DIM+4])
                 domain = linspace(args.lowest, args.highest, 10000)
+                if atoms_listed:
+                    full_occ_sum_a = zeros(domain.shape)
+                    full_free_sum_a = zeros(domain.shape)
+                    full_occ_sum_b = zeros(domain.shape)
+                    full_free_sum_b = zeros(domain.shape)
                 Cmn_a = []
                 Cmn_b = []
                 for n in arange(DIM):
@@ -279,6 +293,11 @@ def main():
                             Sum_b_occ += Cmn_b[N, indices].sum()*gaussian(domain, e, args.smear)
                         else:
                             Sum_b_free += Cmn_b[N, indices].sum()*gaussian(domain, e, args.smear)
+                    if atoms_listed:
+                        full_occ_sum_a += Sum_a_occ 
+                        full_occ_sum_b += Sum_b_occ 
+                        full_free_sum_a += Sum_a_free
+                        full_free_sum_b += Sum_b_free
                     plot(domain, Sum_a_occ, label=atom+' up occ.')
                     plot(domain, Sum_a_free,'--', label=atom+' up free')
                     plot(domain, -Sum_b_occ, label=atom+' down occ.')
@@ -297,10 +316,15 @@ def main():
                         Sum_b_occ += gaussian(domain, e, args.smear)
                     else:
                         Sum_b_free += gaussian(domain, e, args.smear)
-                plot(domain, Sum_a_occ, 'k', label='total up DOS')
-                plot(domain, Sum_a_free, 'k--', label='total up DOS')
-                plot(domain, -Sum_b_occ, 'k', label='total down DOS')
-                plot(domain, -Sum_b_free, 'k--', label='total down DOS')
+                if atoms_listed:
+                    plot(domain, full_occ_sum_a, color='#f1595f', lw = 2.0, label='full occ. of sel. atoms')
+                    plot(domain, full_free_sum_a, '--',color='#f1595f', lw = 2.0, label='full occ. of sel. atoms')
+                    plot(domain, -full_occ_sum_b, color='#599ad3', lw = 2.0, label='full occ. of sel. atoms')
+                    plot(domain, -full_free_sum_b, '--', color='#599ad3', lw = 2.0, label='full occ. of sel. atoms')
+                plot(domain, Sum_a_occ, 'k', lw = 2.0, label='total up DOS')
+                plot(domain, Sum_a_free, 'k--', lw = 2.0, label='total up DOS')
+                plot(domain, -Sum_b_occ, 'k', lw = 2.0, label='total down DOS')
+                plot(domain, -Sum_b_free, 'k--', lw = 2.0, label='total down DOS')
             legend(loc=2)
             show()
             log.close()
