@@ -68,6 +68,36 @@ def plot_with_weight(value, weight):
     domain = linspace(value-args.smear*10, value+args.smear*10)
     plot(domain, gauss.pdf(domain))
 
+def find_Ef(eigs,ocns):
+    global HFTyp
+    if HFTyp == 'RHF':
+        e = eigs[0]
+        f = ocns[0]
+        for ei,fi in zip(e,f):
+            if fi < 0.5:
+                LUMO = ei
+                break
+            HOMO = ei
+        return (HOMO+LUMO)*0.5
+    if HFTyp == 'UHF' :
+        e_a = eigs[0]
+        e_b = eigs[1]
+        f_a = ocns[0]
+        f_b = ocns[1]
+        for ei,fi in zip(e_a,f_a):
+            if fi < 0.5:
+                LUMO_A = ei
+                break
+            HOMO_A = ei
+        for ei,fi in zip(e_b,f_b):
+            if fi < 0.5:
+                LUMO_B = ei
+                break
+            HOMO_B = ei
+        HOMO = max(HOMO_A,HOMO_B)
+        LUMO = min(LUMO_A,LUMO_B)
+        return (HOMO+LUMO)*0.5
+
 def get_mo_decomposition(mo_number, data, renorm = False):
     global DIM
     global HFTyp
@@ -194,6 +224,7 @@ def main():
                 MOS_EIG = list_to_array(data[1::DIM+4])
                 MOS_EIG = MOS_EIG*codata.value('Hartree energy in eV')
                 MOS_OCC = list_to_array(data[2::DIM+4])
+                fermilevel = find_Ef([MOS_EIG],[MOS_OCC])
                 domain = linspace(args.lowest, args.highest, 10000)
                 if atoms_listed:
                     full_occ_sum = zeros(domain.shape)
@@ -259,6 +290,7 @@ def main():
                 MOS_EIG_B = MOS_EIG_B*codata.value('Hartree energy in eV')
                 MOS_OCC_A = list_to_array(data_a[2::DIM+4])
                 MOS_OCC_B = list_to_array(data_b[2::DIM+4])
+                fermilevel = find_Ef([MOS_EIG_A,MOS_EIG_B],[MOS_OCC_A,MOS_OCC_B])
                 domain = linspace(args.lowest, args.highest, 10000)
                 if atoms_listed:
                     full_occ_sum_a = zeros(domain.shape)
@@ -325,6 +357,7 @@ def main():
                 plot(domain, Sum_a_free, 'k--', lw = 2.0, label='total up DOS')
                 plot(domain, -Sum_b_occ, 'k', lw = 2.0, label='total down DOS')
                 plot(domain, -Sum_b_free, 'k--', lw = 2.0, label='total down DOS')
+            axvline(x = fermilevel, ymin = 0.0, ymax = 1.0, color = 'k')
             legend(loc=2)
             show()
             log.close()
