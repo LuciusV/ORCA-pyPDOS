@@ -39,7 +39,7 @@ parser = argparse.ArgumentParser(description='Parse ORCA out file and plot parti
 group = parser.add_mutually_exclusive_group()
 parser.add_argument('filename', type=str, help="path to input file(s)", nargs='+')
 parser.add_argument('-s', '--smear', type=float, default=0.1, help="smearing width (in eV)")
-parser.add_argument('-d', '--dump', type=bool, default=False, action='store_true', help='store data in txt files')
+parser.add_argument('-d', '--dump', default=False, action='store_true', help='store data in txt files')
 parser.add_argument('-v', '--verbosity', action='count', default=0, help="verbosity level(-v,-vv,-vvv)")
 group.add_argument('-u', '--unique', default=False, action='store_true', help="plot DOS for unique atoms")
 group.add_argument('-a', '--atoms', type=int, help="array of atoms for which to plot DOS", nargs='+')
@@ -247,8 +247,8 @@ def main():
                     plot(domain, Sum_occ, label=atom+' occ.')
                     plot(domain, Sum_free,'--', label=atom+' free')
                     if args.dump:
-                        np.savetxt(atom+'_occ.txt',Sum_occ)
-                        np.savetxt(atom+'_free.txt',Sum_free)
+                        np.savetxt(atom+'_occ.txt',np.transpose([domain, Sum_occ]))
+                        np.savetxt(atom+'_free.txt',np.transpose([domain, Sum_free]))
                 Sum_occ = zeros(domain.shape)
                 Sum_free = zeros(domain.shape)
                 for e,f in zip(MOS_EIG,MOS_OCC):
@@ -262,8 +262,8 @@ def main():
                 plot(domain, Sum_occ,'k', lw = 2.0, label='total occ. DOS')
                 plot(domain, Sum_free,'k--', lw = 2.0, label='total free DOS')
                 if args.dump:
-                    np.savetxt('total_occ', Sum_occ)
-                    np.savetxt('total_free', Sum_free)
+                    np.savetxt('total_occ.txt', np.transpose([domain, Sum_occ]))
+                    np.savetxt('total_free.txt', np.transpose([domain, Sum_free]))
             if HFTyp == 'UHF':
                 for line in data_a[4:4+DIM]:
                     if args.unique:
@@ -337,10 +337,10 @@ def main():
                     plot(domain, -Sum_b_occ, label=atom+' down occ.')
                     plot(domain, -Sum_b_free,'--', label=atom+' down free')
                     if args.dump:
-                        np.savetxt(atom + '_up_occ.txt',Sum_a_occ)
-                        np.savetxt(atom + '_up_free',Sum_a_free)
-                        np.savetxt(atom + '_down_occ',Sum_b_occ)
-                        np.savetxt(atom + '_down_free',Sum_b_free)
+                        np.savetxt(atom + '_up_occ.txt',np.transpose([domain, Sum_a_occ]))
+                        np.savetxt(atom + '_up_free.txt',np.transpose([domain, Sum_a_free]))
+                        np.savetxt(atom + '_down_occ.txt',np.transpose([domain, Sum_b_occ]))
+                        np.savetxt(atom + '_down_free.txt',np.transpose([domain, Sum_b_free]))
                 Sum_a_occ = zeros(domain.shape)
                 Sum_a_free = zeros(domain.shape)
                 Sum_b_occ = zeros(domain.shape)
@@ -365,10 +365,10 @@ def main():
                 plot(domain, -Sum_b_occ, 'k', lw = 2.0, label='total down DOS')
                 plot(domain, -Sum_b_free, 'k--', lw = 2.0, label='total down DOS')
                 if args.dump:
-                    np.savetxt('total_up_occ', Sum_a_occ)
-                    np.savetxt('total_up_free', Sum_a_free)
-                    np.savetxt('total_down_occ', Sum_b_occ)
-                    np.savetxt('total_down_free', Sum_b_free)
+                    np.savetxt('total_up_occ.txt', np.transpose([domain, Sum_a_occ]))
+                    np.savetxt('total_up_free.txt', np.transpose([domain, Sum_a_free]))
+                    np.savetxt('total_down_occ.txt', np.transpose([domain, Sum_b_occ]))
+                    np.savetxt('total_down_free.txt', np.transpose([domain, Sum_b_free]))
             axvline(x = fermilevel, ymin = 0.0, ymax = 1.0, color = 'k')
             legend(loc=9,ncol=6)
             show()
