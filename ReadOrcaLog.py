@@ -1,4 +1,12 @@
 def ReadOrcaLog(fileobject):
+    """
+    :param fileobject: open file object of Orca job log
+    :return Type: RKS or UKS
+    :return int(NumberOfElectrons): Number of electrons
+    :return int(BasisDimension): Basis dimension (equals to number of molecular orbitals).
+    :return Content: list of lines in file
+    :return LastLine: number of lines in file
+    """
     Content = fileobject.readlines()
     Type = None
     NumberOfElectrons = None
